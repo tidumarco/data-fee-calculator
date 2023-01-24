@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { debounce } from "lodash";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 import {
   CartValue,
   DeliveryFee,
@@ -10,14 +13,21 @@ import {
 } from "../types";
 
 function DeliveryFeeCalculator() {
+  const formatWeekday = new Intl.DateTimeFormat(undefined, { weekday: "long" })
+    .format;
   const [cartValue, setCartValue] = useState<CartValue>(0);
   const [cartSurcharge, setCartSurcharge] = useState(0);
+
   const [distance, setDistance] = useState<Distance>(0);
   const [distanceSurcharge, setDistanceSurcharge] = useState(0);
+  console.log("DISTANCE SURCHARGE", distanceSurcharge);
+
   const [items, setItems] = useState<Items>(0);
   const [itemsSurcharge, setItemsSurcharge] = useState(0);
-  const [date, setDate] = useState<DeliveryDate>("");
-  const [total, setTotal] = useState(0);
+
+  const [date, setDate] = useState<DeliveryDate>(new Date());
+  const weekday = date ? formatWeekday(date) : null;
+
   const [deliveryFee, setDeliveryFee] = useState<DeliveryFee>(0);
 
   function handleValueChange(e: onChange) {
@@ -39,55 +49,69 @@ function DeliveryFeeCalculator() {
     console.log(newItemsNumber);
   }
 
-  function handleDateChange(e: onChange) {
-    const date = e.target.value;
+  function handleDateChange(date: Date) {
     setDate(date);
-    console.log(date);
   }
   const debouncedValueOnChange = debounce(handleValueChange, 500);
   const debouncedDistanceOnchange = debounce(handleDistanceChange, 500);
   const debouncedItemsOnChange = debounce(handleItemsChange, 500);
 
-  function handleCartSurcharge() {
-    if (cartValue < 10 && cartValue > 0) {
-      const cartValueNumber = cartValue;
-      const cartSurchargeValue = 10 - cartValueNumber;
-      setCartSurcharge(cartSurchargeValue);
+  useEffect(() => {
+    function handleCartSurcharge() {
+      if (cartValue < 10 && cartValue > 0) {
+        const cartValueNumber = cartValue;
+        const cartSurchargeValue = 10 - cartValueNumber;
+        setCartSurcharge(cartSurchargeValue);
+      }
     }
-  }
-  function handledistanceSurcharge() {
-    let fee = 2;
+    function handleDistanceSurcharge() {
+      let fee = 2;
+      if (distance > 1000) {
+        const additionalDistance = distance - 1000;
+        fee += Math.ceil(additionalDistance / 500) * 1;
+      }
+      setDistanceSurcharge(Math.max(fee, 1));
+    }
 
-    if (distance > 1000) {
-      const additionalDistance = distance - 1000;
-      fee += Math.ceil(additionalDistance / 500) * 1;
+    function handleItemsSurcharge() {
+      let itemsSurcharge = 0;
+      if (items >= 5) {
+        itemsSurcharge += (items - 4) * 0.5;
+      }
+      if (items > 12) {
+        itemsSurcharge += 1.2;
+      }
+      setItemsSurcharge(itemsSurcharge);
     }
-    setDistanceSurcharge(Math.max(fee, 1));
-  }
 
-  function handleItemsSurcharge() {
-    let itemsSurcharge = 0;
-    if (items >= 5) {
-      itemsSurcharge += (items - 4) * 0.5;
+    // function handleRushHourSurcharge(): any {
+    //   const newTotal = deliveryFee * 1.2;
+    //   setDeliveryFee(Math.min(newTotal, 15));
+    // }
+
+    function calculateSurcharges() {
+      handleCartSurcharge();
+      handleDistanceSurcharge();
+      handleItemsSurcharge();
+      //   let latch = false;
+      //   if (weekday === "Friday" && !latch) {
+      //     handleRushHourSurcharge();
+      //     latch = true;
+      //   }
     }
-    if (items > 12) {
-      itemsSurcharge += 1.2;
-    }
-    setItemsSurcharge(itemsSurcharge);
-  }
+    calculateSurcharges();
+  }, [cartSurcharge, cartValue, deliveryFee, distance, items, weekday]);
 
   function handleTotal() {
-    let maxTotal = cartSurcharge + distanceSurcharge + itemsSurcharge;
-    setTotal(maxTotal);
+    const maxTotal = cartSurcharge + distanceSurcharge + itemsSurcharge;
+    console.log("MAX TOTAL", maxTotal);
+    setDeliveryFee(Math.min(maxTotal, 15));
   }
 
   function onSubmit(e: React.FormEvent): void {
     e.preventDefault();
-    handleCartSurcharge();
-    handledistanceSurcharge();
-    handleItemsSurcharge();
     handleTotal();
-    setDeliveryFee(total);
+    // const deliveryTime = date.getUTCHours();
   }
 
   return (
@@ -146,14 +170,10 @@ function DeliveryFeeCalculator() {
           >
             Time
           </label>
-          <input
-            type="datetime-local"
-            name="date"
-            id="date"
-            value={date}
-            className="border border-gray-400 p-2 rounded-lg w-full"
-            onChange={handleDateChange}
-          />
+          <div className="DatePickerWithWeekday">
+            {weekday} <br />
+            <DatePicker selected={date} onChange={handleDateChange} />
+          </div>
         </div>
         <button
           type="submit"
@@ -161,9 +181,9 @@ function DeliveryFeeCalculator() {
         >
           Calculate Delivery Fee
         </button>
-        {deliveryFee > 0 && (
+        {deliveryFee >= 0 && (
           <p className="mt-4 text-indigo-500 font-medium">
-            Delivery Fee: € {total}
+            Delivery Fee: € {deliveryFee.toFixed(2)}
           </p>
         )}
       </form>
