@@ -22,7 +22,7 @@ function DeliveryFeeCalculator() {
   const [cartValue, setCartValue] = useState<CartValue>(0);
 
   const [cartSurcharge, setCartSurcharge] = useState<CartSurcharge>(0);
-  console.log("CART VALUE", cartSurcharge);
+
   const [distance, setDistance] = useState<Distance>(0);
 
   const [distanceSurcharge, setDistanceSurcharge] =
@@ -65,7 +65,7 @@ function DeliveryFeeCalculator() {
   useEffect(() => {
     function handleCartSurcharge() {
       if (cartValue < 10) {
-        const cartSurchargeValue = cartValue - 10;
+        const cartSurchargeValue = 10 - cartValue;
         setCartSurcharge(cartSurchargeValue < 0 ? 0 : cartSurchargeValue);
       }
     }
@@ -98,7 +98,7 @@ function DeliveryFeeCalculator() {
 
       if (rush === true && date.getHours() >= 15 && date.getHours() <= 19) {
         setDeliveryFee(Math.min(newTotal, 15));
-        console.log("RUSH HOUR");
+
         setRush(false);
       }
     }
@@ -137,8 +137,14 @@ function DeliveryFeeCalculator() {
   }
 
   return (
-    <>
-      <form onSubmit={onSubmit} className="bg-white p-6 rounded-lg shadow-md">
+    <div
+      className="bg-center bg-cover h-screen w-screen flex items-center justify-center"
+      style={{ backgroundImage: "url(/background.jpg)" }}
+    >
+      <form
+        onSubmit={onSubmit}
+        className="backdrop-blur-md bg-white p-6 rounded-lg shadow-md w-1/4"
+      >
         <h2 className="text-lg font-medium mb-4">Delivery Fee Calculator</h2>
         <div className="mb-4">
           <label
@@ -151,7 +157,7 @@ function DeliveryFeeCalculator() {
             type="float"
             name="value"
             id="value"
-            className="border border-gray-400 p-2 rounded-lg w-full"
+            className="border border-gray-400 p-2 w-1/2 rounded-lg w-full"
             onChange={debouncedValueOnChange}
           />
         </div>
@@ -166,7 +172,7 @@ function DeliveryFeeCalculator() {
             type="number"
             name="distance"
             id="distance"
-            className="border border-gray-400 p-2 rounded-lg w-full"
+            className="border border-gray-400 p-2 w-1/2 rounded-lg w-full"
             onChange={debouncedDistanceOnchange}
           />
         </div>
@@ -181,7 +187,7 @@ function DeliveryFeeCalculator() {
             type="number"
             name="items"
             id="items"
-            className="border border-gray-400 p-2 rounded-lg w-full"
+            className="border border-gray-400 p-2 w-1/2 rounded-lg w-full"
             onChange={debouncedItemsOnChange}
           />
         </div>
@@ -193,7 +199,12 @@ function DeliveryFeeCalculator() {
             Time
           </label>
           <div className="DatePickerWithWeekday">
-            {weekday} <br />
+            Day of the week: {weekday} <br />
+            Time:
+            {date.toLocaleTimeString("fi-FI", {
+              hour: "numeric",
+              minute: "numeric",
+            })}
             <DatePicker
               id="time"
               selected={date}
@@ -202,25 +213,26 @@ function DeliveryFeeCalculator() {
             />
           </div>
         </div>
-
-        <button
-          type="submit"
-          id="submit"
-          className="bg-indigo-500 text-white py-2 px-4 rounded-lg hover:bg-indigo-600"
-        >
-          Calculate Delivery Fee
-        </button>
+        <div className="flex items-center justify-center">
+          <button
+            type="submit"
+            id="submit"
+            className="bg-indigo-500 text-white py-2 px-4 rounded-lg hover:bg-indigo-600"
+          >
+            Calculate Delivery Fee
+          </button>
+        </div>
 
         {deliveryFee >= 0 && (
           <p
             data-testid="delivery-fee"
-            className="mt-4 text-indigo-500 font-medium"
+            className="mt-4 text-indigo-500 font-medium flex items-center justify-center"
           >
             Delivery Fee: € {deliveryFee.toFixed(2)}
           </p>
         )}
       </form>
-    </>
+    </div>
   );
 }
 
