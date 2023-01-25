@@ -67,6 +67,8 @@ function DeliveryFeeCalculator() {
       if (cartValue < 10) {
         const cartSurchargeValue = 10 - cartValue;
         setCartSurcharge(cartSurchargeValue < 0 ? 0 : cartSurchargeValue);
+      } else {
+        setCartSurcharge(0);
       }
     }
     function handleDistanceSurcharge() {
@@ -91,6 +93,7 @@ function DeliveryFeeCalculator() {
 
     function handleRushHourSurcharge(): void {
       const newTotal = deliveryFee * 1.2;
+      console.log("RUSH HOUR", rush);
 
       if (weekday === "Friday") {
         setRush(true);
@@ -98,6 +101,7 @@ function DeliveryFeeCalculator() {
 
       if (rush === true && date.getHours() >= 15 && date.getHours() <= 19) {
         setDeliveryFee(Math.min(newTotal, 15));
+        console.log("RUSH HOUR", rush, "DELIVERY FEE", deliveryFee);
 
         setRush(false);
       }
@@ -199,17 +203,21 @@ function DeliveryFeeCalculator() {
             Time
           </label>
           <div className="DatePickerWithWeekday">
-            Day of the week: {weekday} <br />
-            Time:
-            {date.toLocaleTimeString("fi-FI", {
-              hour: "numeric",
-              minute: "numeric",
-            })}
+            Day of the week: {weekday}
+            <DatePicker
+              id="date"
+              selected={date}
+              onChange={debouncedDateOnChange}
+            />
             <DatePicker
               id="time"
               selected={date}
               onChange={debouncedDateOnChange}
               showTimeSelect
+              showTimeSelectOnly
+              timeIntervals={15}
+              timeCaption="Time"
+              dateFormat="h:mm aa"
             />
           </div>
         </div>
