@@ -9,7 +9,13 @@ type CartSurcharge = number;
 type DistanceSurcharge = number;
 type ItemsSurcharge = number;
 
+type Order = {
+  value: number;
+  distance: number;
+  items: number;
+};
 export type {
+  Order,
   CartValue,
   DeliveryFee,
   Distance,

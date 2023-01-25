@@ -142,7 +142,7 @@ function DeliveryFeeCalculator() {
         <h2 className="text-lg font-medium mb-4">Delivery Fee Calculator</h2>
         <div className="mb-4">
           <label
-            htmlFor="weight"
+            htmlFor="value"
             className="block text-gray-700 font-medium mb-2"
           >
             Cart Value (€)
@@ -172,7 +172,7 @@ function DeliveryFeeCalculator() {
         </div>
         <div className="mb-4">
           <label
-            htmlFor="distance"
+            htmlFor="items"
             className="block text-gray-700 font-medium mb-2"
           >
             Amount of items
@@ -187,7 +187,7 @@ function DeliveryFeeCalculator() {
         </div>
         <div className="mb-4">
           <label
-            htmlFor="distance"
+            htmlFor="time"
             className="block text-gray-700 font-medium mb-2"
           >
             Time
@@ -195,20 +195,27 @@ function DeliveryFeeCalculator() {
           <div className="DatePickerWithWeekday">
             {weekday} <br />
             <DatePicker
+              id="time"
               selected={date}
               onChange={debouncedDateOnChange}
               showTimeSelect
             />
           </div>
         </div>
+
         <button
           type="submit"
+          id="submit"
           className="bg-indigo-500 text-white py-2 px-4 rounded-lg hover:bg-indigo-600"
         >
           Calculate Delivery Fee
         </button>
+
         {deliveryFee >= 0 && (
-          <p className="mt-4 text-indigo-500 font-medium">
+          <p
+            data-testid="delivery-fee"
+            className="mt-4 text-indigo-500 font-medium"
+          >
             Delivery Fee: € {deliveryFee.toFixed(2)}
           </p>
         )}
