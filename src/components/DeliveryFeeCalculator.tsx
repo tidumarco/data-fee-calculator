@@ -90,11 +90,9 @@ function DeliveryFeeCalculator() {
 
     function handleRushHourSurcharge() {
       const newTotal = deliveryFee * 1.2;
-
       if (weekday === "Friday") {
         setRush(true);
       }
-
       if (rush === true && date.getHours() >= 15 && date.getHours() <= 19) {
         setDeliveryFee(Math.min(newTotal, 15));
         setAlert("Rush hour surcharge applied");
@@ -130,7 +128,7 @@ function DeliveryFeeCalculator() {
       setDeliveryFee(Math.min(maxTotal, 15));
     }
   }
-  function onSubmit(e: React.FormEvent): void {
+  function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     handleTotal();
   }
