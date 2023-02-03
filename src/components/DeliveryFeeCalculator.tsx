@@ -90,12 +90,16 @@ function DeliveryFeeCalculator() {
 
     function handleRushHourSurcharge() {
       const newTotal = deliveryFee * 1.2;
-      if (weekday === "Friday") {
+      if (
+        weekday === "Friday" &&
+        date.getHours() >= 15 &&
+        date.getHours() <= 19
+      ) {
         setRush(true);
       }
-      if (rush === true && date.getHours() >= 15 && date.getHours() <= 19) {
-        setDeliveryFee(Math.min(newTotal, 15));
+      if (rush === true) {
         setAlert("Rush hour surcharge applied");
+        setDeliveryFee(Math.min(newTotal, 15));
         setRush(false);
       }
     }
@@ -131,6 +135,7 @@ function DeliveryFeeCalculator() {
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     handleTotal();
+    setAlert("");
   }
 
   return (
@@ -210,6 +215,7 @@ function DeliveryFeeCalculator() {
               id="date"
               selected={date}
               onChange={debouncedDateOnChange}
+              showDisabledMonthNavigation
             />
             <DatePicker
               id="time"
@@ -220,6 +226,7 @@ function DeliveryFeeCalculator() {
               timeIntervals={15}
               timeCaption="Time"
               dateFormat="h:mm aa"
+              showDisabledMonthNavigation
             />
           </div>
         </div>
