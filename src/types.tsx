@@ -8,14 +8,10 @@ type Rush = boolean;
 type CartSurcharge = number;
 type DistanceSurcharge = number;
 type ItemsSurcharge = number;
+type Alert = string;
 
-type Order = {
-  value: number;
-  distance: number;
-  items: number;
-};
 export type {
-  Order,
+  Alert,
   CartValue,
   DeliveryFee,
   Distance,

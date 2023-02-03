@@ -21,7 +21,7 @@ You will also see any lint errors in the console.
 
 ### `yarn run cypress:open`
 
-It launches the tests through Cypress. After choosing the right test in the browser it will automatically.
+It launches the tests through Cypress. After choosing the right test in the browser it will run automatically.
 
 ### `yarn run build`
 

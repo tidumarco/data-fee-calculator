@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 import {
+  Alert,
   CartValue,
   DeliveryFee,
   Distance,
@@ -20,42 +21,38 @@ function DeliveryFeeCalculator() {
   const formatWeekday = new Intl.DateTimeFormat(undefined, { weekday: "long" })
     .format;
   const [cartValue, setCartValue] = useState<CartValue>(0);
-
   const [cartSurcharge, setCartSurcharge] = useState<CartSurcharge>(0);
-
   const [distance, setDistance] = useState<Distance>(0);
-
   const [distanceSurcharge, setDistanceSurcharge] =
     useState<DistanceSurcharge>(0);
   const [items, setItems] = useState<Items>(0);
-
   const [itemsSurcharge, setItemsSurcharge] = useState<ItemsSurcharge>(0);
   const [date, setDate] = useState<DeliveryDate>(new Date());
   const weekday = date ? formatWeekday(date) : null;
-
   const [rush, setRush] = useState<Rush>(false);
   const [deliveryFee, setDeliveryFee] = useState<DeliveryFee>(0);
+  const [alert, setAlert] = useState<Alert>("");
 
-  function handleValueChange(e: onChange): void {
+  function handleValueChange(e: onChange) {
     const newValue = e.target.value;
     const newValueNumber = parseFloat(newValue);
     setCartValue(newValueNumber);
   }
 
-  function handleDistanceChange(e: onChange): void {
+  function handleDistanceChange(e: onChange) {
     const newDistance = e.target.value;
-    const newDistanceNumber = parseInt(newDistance);
+    const newDistanceNumber = Number(newDistance);
     setDistance(newDistanceNumber);
   }
 
-  function handleItemsChange(e: onChange): void {
+  function handleItemsChange(e: onChange) {
     const newItems = e.target.value;
-    const newItemsNumber = parseInt(newItems);
+    const newItemsNumber = Number(newItems);
     setItems(newItemsNumber);
   }
 
-  function handleDateChange(date: Date): void {
-    setDate(date);
+  function handleDateChange(newDate: Date) {
+    setDate(newDate);
   }
   const debouncedValueOnChange = debounce(handleValueChange, 250);
   const debouncedDistanceOnchange = debounce(handleDistanceChange, 250);
@@ -81,19 +78,18 @@ function DeliveryFeeCalculator() {
     }
 
     function handleItemsSurcharge() {
-      let itemsSurcharge = 0;
+      let newItemsSurcharge = 0;
       if (items >= 5) {
-        itemsSurcharge += (items - 4) * 0.5;
+        newItemsSurcharge += (items - 4) * 0.5;
       }
       if (items > 12) {
-        itemsSurcharge += 1.2;
+        newItemsSurcharge += 1.2;
       }
-      setItemsSurcharge(itemsSurcharge);
+      setItemsSurcharge(newItemsSurcharge);
     }
 
-    function handleRushHourSurcharge(): void {
+    function handleRushHourSurcharge() {
       const newTotal = deliveryFee * 1.2;
-      console.log("RUSH HOUR", rush);
 
       if (weekday === "Friday") {
         setRush(true);
@@ -101,8 +97,7 @@ function DeliveryFeeCalculator() {
 
       if (rush === true && date.getHours() >= 15 && date.getHours() <= 19) {
         setDeliveryFee(Math.min(newTotal, 15));
-        console.log("RUSH HOUR", rush, "DELIVERY FEE", deliveryFee);
-
+        setAlert("Rush hour surcharge applied");
         setRush(false);
       }
     }
@@ -204,6 +199,15 @@ function DeliveryFeeCalculator() {
           </label>
           <div className="DatePickerWithWeekday">
             Day of the week: {weekday}
+            <br />
+            {alert && (
+              <p
+                className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+                role="alert"
+              >
+                {alert}
+              </p>
+            )}
             <DatePicker
               id="date"
               selected={date}
