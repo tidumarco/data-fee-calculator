@@ -193,43 +193,50 @@ function DeliveryFeeCalculator() {
             onChange={debouncedItemsOnChange}
           />
         </div>
+
         <div className="mb-4">
           <label
             htmlFor="time"
             className="block text-gray-700 font-medium mb-2"
           >
-            Time
+            Day {weekday}
           </label>
-          <div className="DatePickerWithWeekday">
-            Day of the week: {weekday}
-            <br />
-            {alert && (
-              <p
-                className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-                role="alert"
-              >
-                {alert}
-              </p>
-            )}
-            <DatePicker
-              id="date"
-              selected={date}
-              onChange={debouncedDateOnChange}
-              showDisabledMonthNavigation
-            />
-            <DatePicker
-              id="time"
-              selected={date}
-              onChange={debouncedDateOnChange}
-              showTimeSelect
-              showTimeSelectOnly
-              timeIntervals={15}
-              timeCaption="Time"
-              dateFormat="h:mm aa"
-              showDisabledMonthNavigation
-            />
-          </div>
+          {alert && (
+            <p
+              className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+              role="alert"
+            >
+              {alert}
+            </p>
+          )}
+          <DatePicker
+            id="date"
+            selected={date}
+            onChange={debouncedDateOnChange}
+            showDisabledMonthNavigation
+            className="border border-gray-400 p-2 w-full rounded-lg mb-2"
+          />
+          <label
+            htmlFor="time"
+            className="block text-gray-700 font-medium mb-2"
+          >
+            Time {date.getHours().toString().padStart(2, "0")}:
+            {date.getMinutes().toString().padStart(2, "0")}
+          </label>
+          <DatePicker
+            id="time"
+            selected={date}
+            onChange={debouncedDateOnChange}
+            showTimeSelect
+            showTimeSelectOnly
+            timeIntervals={15}
+            timeCaption="Time"
+            dateFormat="HH:mm"
+            showDisabledMonthNavigation
+            className="border border-gray-400 p-2 w-full rounded-lg"
+          />
         </div>
+
         <div className="flex items-center justify-center">
           <button
             type="submit"
